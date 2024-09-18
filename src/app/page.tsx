@@ -1,7 +1,6 @@
-'use client'
+'use client';
 
 import { useSearchParams, redirect } from 'next/navigation';
-
 
 const Page = () => {
   const searchParams = useSearchParams();

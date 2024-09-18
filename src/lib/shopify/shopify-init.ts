@@ -10,7 +10,7 @@ const shopify = shopifyApi({
     apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
     scopes: process.env.SHOPIFY_API_SCOPES?.split(",") || ["read_products", "write_products"],
     hostName: process.env.HOST_NAME || "localhost:3000",
-    hostScheme: "http",
+    hostScheme: "https",
     isEmbeddedApp: false,
     apiVersion: LATEST_API_VERSION,
     logger: {

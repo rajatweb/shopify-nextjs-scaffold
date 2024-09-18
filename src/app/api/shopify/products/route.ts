@@ -2,25 +2,34 @@
 
 import { NextResponse } from 'next/server';
 import shopify from '@/lib/shopify/shopify-init';
-import { Session } from "@shopify/shopify-api";
-
-function getSessionFromStorage() {
-    const session = localStorage.getItem("session")!
-    const sessionObj = JSON.parse(session) as Session;
-    return sessionObj;
-}
+import { getSessionFromStorage } from '@/utils/shopify';
 
 export async function GET() {
-
     const session = await getSessionFromStorage();
-    console.log("🚀 ~ GET ~ session:", session)
+
+    // Rest API - deprecated
+    // const client = new shopify.clients.Rest({ session });
+    // const products = await client.get({
+    //     path: 'products',
+    // });
+
+    // Use GrapQl API
+    const client = new shopify.clients.Graphql({ session });
+    const products = await client.request(
+        `{
+          products (first: 10) {
+            edges {
+              node {
+                id
+                title
+                descriptionHtml
+              }
+            }
+          }
+        }`,
+    );
 
 
-    const client = new shopify.clients.Rest({ session });
-    const products = await client.get({
-        path: 'products',
-    });
-
-    return NextResponse.json({ products: products.body.products });
+    return NextResponse.json({ products: products.data.products });
 }
 

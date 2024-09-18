@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
@@ -10,7 +10,8 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             const response = await axios.get('/api/shopify/products');
-            setProducts(response.data.products);
+            console.log("🚀 ~ fetchProducts ~ response:", response.data.products.edges)
+            setProducts(response.data.products.edges);
         };
 
         fetchProducts();
@@ -20,13 +21,18 @@ const Dashboard = () => {
         <div>
             <h1>Product Dashboard</h1>
             <ul>
-                {products.map((product: any) => (
-                    <li key={product.id}>
-                        <h2>{product.title}</h2>
-                        <p>{product.body_html}</p>
-                        <a href={`/dashboard/product/${product.id}`}>View Product</a>
-                    </li>
-                ))}
+                {products.map((product: any) => {
+                    const gidString = product.node.id;
+                    const gidArray = gidString.split("/");
+                    return (
+                        <li key={product.node.id}>
+                            {`${product.node.id}`}
+                            <h2>{product.node.title}</h2>
+                            <p>{product.node.descriptionHtml}</p>
+                            <a href={`/dashboard/product/${gidArray[gidArray.length - 1]}}`}>View Product</a>
+                        </li>
+                    )
+                })}
             </ul>
         </div>
     );

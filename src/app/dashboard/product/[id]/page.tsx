@@ -1,10 +1,13 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 
 const ProductPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id')
+  console.log("🚀 ~ ProductPage ~ id:", id)
   const [product, setProduct] = useState(null);
   const [countdown, setCountdown] = useState(0);
 
@@ -12,6 +15,7 @@ const ProductPage = () => {
     if (id) {
       const fetchProduct = async () => {
         const response = await axios.get(`/api/shopify/products/${id}`);
+        console.log("🚀 ~ fetchProduct ~ response:", response)
         setProduct(response.data.product);
       };
 
