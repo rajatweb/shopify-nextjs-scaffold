@@ -74,7 +74,7 @@ export async function GET(req: Request) {
             return new NextResponse("Missing host parameter", { status: 400 });
         }
 
-        let redirectUrl = `http://localhost:3000/?shop=${session.shop}&host=${encodeURIComponent(sanitizedHost!)}&`;
+        let redirectUrl = `http://localhost:3000/?shop=${session.shop}&host=${encodeURIComponent(sanitizedHost!)}`;
         if (shopify.config.isEmbeddedApp) {
             redirectUrl = await shopify.auth.getEmbeddedAppUrl({
                 rawRequest: req,

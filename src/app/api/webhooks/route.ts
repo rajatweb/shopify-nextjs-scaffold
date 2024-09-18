@@ -1,27 +1,24 @@
+import shopify from "@/lib/shopify/shopify-init";
+import { addHandlers } from "@/lib/shopify/register-webhook";
+import { headers } from "next/headers";
 
-// import { shopify } from '@/lib/shopify';
-import { NextRequest, NextResponse } from 'next/server';
+export async function POST(req: Request) {
+    const topic = headers().get("x-shopify-topic") as string;
 
-export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const accessToken = searchParams.get('access_token');
-
-        if(accessToken) 
-        // await shopify.webhooks.register({
-        //     session: accessToken
-        // });
-        // await shopify.webhooks.register({
-        //   shop: process.env.SHOPIFY_SHOP || '',
-        //   accessToken: process.env.SHOPIFY_ACCESS_TOKEN || '',
-        //   webhook: {
-        //     topic: 'orders/create',
-        //     address: `${process.env.HOST_NAME}/api/webhooks/order-created`,
-        //     format: 'json',
-        //   },
-        // });
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        return NextResponse.json({ error: error });
+    // Seems like there is some weird behaviour where the shopify api doesn't have the handlers registered - possibly due to some serverless behaviour
+    const handlers = shopify.webhooks.getHandlers(topic);
+    if (handlers.length === 0) {
+        console.log(`No handlers found for topic: ${topic}`);
+        addHandlers();
     }
+
+    const rawBody = await req.text();
+
+    await shopify.webhooks.process({
+        rawBody,
+        rawRequest: req,
+    });
+
+    console.log(`Webhook processed, returned status code 200`);
+    return new Response(null, { status: 200 });
 }
